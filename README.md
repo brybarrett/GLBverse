@@ -1,6 +1,3 @@
-Gotchu! Here's the full `README.md` file wrapped in a code block so you can copy-paste it straight into your project folder:
-
-
 # 🚀 GLBverse – 3D Model Viewer Web App
 
 GLBverse is a full-stack web application built with **React**, **Three.js**, and **Node.js**, designed to upload, store, and display 3D `.glb` models in real-time. Whether you're a designer, developer, or 3D enthusiast, GLBverse makes sharing 3D content effortless and visually stunning.
@@ -13,11 +10,6 @@ GLBverse is a full-stack web application built with **React**, **Three.js**, and
 
 ---
 
-## 📸 Preview
-
-![screenshot](https://your-screenshot-url.com)
-
----
 
 ## 🧠 Features
 
@@ -27,7 +19,6 @@ GLBverse is a full-stack web application built with **React**, **Three.js**, and
 - 📁 File management and server-side storage
 - 🔒 Environment-safe API configs
 
----
 
 ## 🛠️ Tech Stack
 
@@ -47,7 +38,7 @@ GLBverse is a full-stack web application built with **React**, **Three.js**, and
 - Vercel / Render (for hosting)
 - MongoDB (optional – for model metadata storage)
 
----
+
 
 ## 🖥️ Getting Started
 
