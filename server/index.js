@@ -152,8 +152,6 @@ app.get("/api/model/:id", async (req, res) => {
   }
 });
 
-
-
 // Production note (if needed later)
 if (process.env.NODE_ENV === "production") {
   console.log("Running in production mode");
