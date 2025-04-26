@@ -10,7 +10,7 @@ const app = express();
 
 // Enhanced CORS configuration
 app.use(cors({
-  origin: ['http://localhost:3000', 'https://your-production-domain.com'],
+  origin: ['http://localhost:3000'],
   methods: ['GET', 'POST', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
@@ -38,8 +38,15 @@ conn.once('open', () => {
   console.log('GridFS initialized');
 });
 
+
+
+
+
+
 // File upload with validation
 const storage = multer.memoryStorage();
+
+
 const upload = multer({
   storage,
   limits: { fileSize: 100 * 1024 * 1024 }, // 100MB limit
@@ -51,6 +58,8 @@ const upload = multer({
     }
   }
 });
+
+
 
 // Enhanced routes with better error handling
 app.post('/api/upload', upload.single('model'), async (req, res) => {
