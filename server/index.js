@@ -36,6 +36,12 @@ mongoose
 const conn = mongoose.connection;
 let gfs;
 
+
+app.get("/api/hello", (req, res) => {
+  res.json({ msg: "Hello from Vercel!" });
+});
+
+
 conn.once("open", () => {
   gfs = new mongoose.mongo.GridFSBucket(conn.db, {
     bucketName: "models",
