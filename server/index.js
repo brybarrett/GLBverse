@@ -10,7 +10,7 @@ const app = express();
 
 // Enhanced CORS configuration
 app.use(cors({
-  origin: ['http://localhost:3000'],
+  origin: [process.env.CLIENT_URL],
   methods: ['GET', 'POST', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
