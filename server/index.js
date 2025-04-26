@@ -10,7 +10,7 @@ const app = express();
 
 // Enhanced CORS configuration
 app.use(cors({
-  origin: [process.env.CLIENT_URL],
+  origin: ['http://localhost:3000',"https://gl-bverse-prdb.vercel.app"],
   methods: ['GET', 'POST', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
