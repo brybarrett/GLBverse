@@ -12,7 +12,8 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000",
-      "https://gl-bverse-prdb.vercel.app", // your live React frontend
+      "https://server-gbl.vercel.app",
+       "https://client-gbl.vercel.app"
     ],
     methods: ["GET", "POST", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
