@@ -152,6 +152,23 @@ app.get("/api/model/:id", async (req, res) => {
   }
 });
 
+app.delete('/api/models/:filename([a-zA-Z0-9.%\-_]+)', async (req, res) => {
+  try {
+    const filename = decodeURIComponent(req.params.filename);
+    const files = await gfs.find({ filename }).toArray();
+
+    if (!files.length) {
+      return res.status(404).json({ error: 'File not found' });
+    }
+
+    await gfs.delete(files[0]._id);
+    res.json({ message: 'File deleted successfully' });
+  } catch (error) {
+    console.error('Delete error:', error);
+    res.status(500).json({ error: 'Error deleting file' });
+  }
+});
+
 // Production note (if needed later)
 if (process.env.NODE_ENV === "production") {
   console.log("Running in production mode");
