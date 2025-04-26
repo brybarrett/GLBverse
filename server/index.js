@@ -3,14 +3,16 @@ const mongoose = require('mongoose');
 const multer = require('multer');
 const { GridFSBucket } = require('mongodb');
 const cors = require('cors');
-const path = require('path');
 require('dotenv').config();
 
 const app = express();
 
-// Enhanced CORS configuration
+// CORS config (allow local + live frontend)
 app.use(cors({
-  origin: ['http://localhost:3000',"https://gl-bverse-prdb.vercel.app"],
+  origin: [
+    'http://localhost:3000', 
+    'https://gl-bverse-prdb.vercel.app' // your live React frontend
+  ],
   methods: ['GET', 'POST', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
@@ -18,14 +20,15 @@ app.use(cors({
 
 app.use(express.json({ limit: '50mb' }));
 
-// MongoDB Connection with improved error handling
+// MongoDB connect
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   retryWrites: true,
   w: 'majority'
-}).then(() => console.log('MongoDB connected successfully'))
-  .catch(err => console.error('MongoDB connection error:', err));
+})
+.then(() => console.log('MongoDB connected successfully'))
+.catch(err => console.error('MongoDB connection error:', err));
 
 const conn = mongoose.connection;
 let gfs;
@@ -38,15 +41,8 @@ conn.once('open', () => {
   console.log('GridFS initialized');
 });
 
-
-
-
-
-
-// File upload with validation
+// Multer setup (only GLB files)
 const storage = multer.memoryStorage();
-
-
 const upload = multer({
   storage,
   limits: { fileSize: 100 * 1024 * 1024 }, // 100MB limit
@@ -59,9 +55,7 @@ const upload = multer({
   }
 });
 
-
-
-// Enhanced routes with better error handling
+// Upload API
 app.post('/api/upload', upload.single('model'), async (req, res) => {
   try {
     if (!req.file) {
@@ -87,7 +81,7 @@ app.post('/api/upload', upload.single('model'), async (req, res) => {
       res.status(201).json({
         success: true,
         message: 'File uploaded successfully',
-        filename: filename,
+        filename,
         fileId: writeStream.id,
         size: req.file.size
       });
@@ -95,31 +89,22 @@ app.post('/api/upload', upload.single('model'), async (req, res) => {
 
     writeStream.on('error', (error) => {
       console.error('Upload error:', error);
-      res.status(500).json({ 
-        success: false,
-        error: 'Upload failed' 
-      });
+      res.status(500).json({ success: false, error: 'Upload failed' });
     });
 
   } catch (error) {
     console.error('Upload error:', error);
-    res.status(500).json({ 
-      success: false,
-      error: error.message || 'Upload failed' 
-    });
+    res.status(500).json({ success: false, error: error.message || 'Upload failed' });
   }
 });
 
-// ... (keep other routes similar with enhanced error handling)
-
-// Production setup
+// Production note (if needed later)
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../client/build')));
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../client/build/index.html'));
-  });
+  console.log('Running in production mode');
+  // No need to serve frontend manually, Vercel handles it
 }
 
+// Port setup
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
