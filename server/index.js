@@ -1,17 +1,21 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const multer = require("multer");
-const { GridFSBucket } = require("mongodb");
-const cors = require("cors");
 require("dotenv").config();
+const cors = require("cors");
 
 const app = express();
 
 // CORS config (allow local + Vercel frontend)
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://client-gbl.vercel.app", "http://localhost:5000"],
-    methods: ["GET", "POST", "DELETE"],
+    origin: [
+      "http://localhost:3000",
+      "https://client-gbl.vercel.app",
+      "http://localhost:5000",
+      "https://gl-bverse-prdb.vercel.app",
+    ],
+    methods: ["GET", "POST", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
@@ -23,7 +27,6 @@ app.use(express.json({ limit: "50mb" }));
 mongoose
   .connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
-    useUnifiedTopology: true,
     retryWrites: true,
     w: "majority",
   })
@@ -42,6 +45,7 @@ app.get("/api/hello", (req, res) => {
   res.json({ msg: "Hello from Vercel!" });
 });
 
+// Initialize GridFS once DB is open
 conn.once("open", () => {
   gfs = new mongoose.mongo.GridFSBucket(conn.db, {
     bucketName: "models",
@@ -120,14 +124,20 @@ app.get("/api/models", async (req, res) => {
   }
 });
 
-// Download model by filename
-app.get("/api/models/:filename", (req, res) => {
-  try {
-    // 👇 set CORS headers manually here
-    res.set("Access-Control-Allow-Origin", "*");
-    res.set("Access-Control-Allow-Methods", "GET, OPTIONS");
-    res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+// Middleware to set CORS headers BEFORE streaming
+const setCorsHeaders = (req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+  next();
+};
 
+// Download model by filename
+app.get("/api/models/:filename", setCorsHeaders, (req, res) => {
+  try {
     const downloadStream = gfs.openDownloadStreamByName(req.params.filename);
 
     downloadStream.on("error", (error) => {
@@ -143,13 +153,8 @@ app.get("/api/models/:filename", (req, res) => {
 });
 
 // Download model by ID
-app.get("/api/model/:id", async (req, res) => {
+app.get("/api/model/:id", setCorsHeaders, (req, res) => {
   try {
-    // 👇 set CORS headers manually here too
-    res.set("Access-Control-Allow-Origin", "*");
-    res.set("Access-Control-Allow-Methods", "GET, OPTIONS");
-    res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
     const fileId = new mongoose.Types.ObjectId(req.params.id);
     const downloadStream = gfs.openDownloadStream(fileId);
 
