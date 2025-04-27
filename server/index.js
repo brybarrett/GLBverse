@@ -14,8 +14,6 @@ app.use(
       "https://client-gbl.vercel.app",
       "http://localhost:5000",
       "https://gl-bverse-prdb.vercel.app",
-      "https://client-gbl.vercel.app",
-      "https://gl-bverse-prdb.vercel.app/"
     ],
     methods: ["GET", "POST", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
