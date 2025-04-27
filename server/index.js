@@ -14,6 +14,8 @@ app.use(
       "https://client-gbl.vercel.app",
       "http://localhost:5000",
       "https://gl-bverse-prdb.vercel.app",
+      "https://client-gbl.vercel.app",
+      "https://gl-bverse-prdb.vercel.app/"
     ],
     methods: ["GET", "POST", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -109,7 +111,9 @@ app.post("/api/upload", upload.single("model"), async (req, res) => {
     });
   } catch (error) {
     console.error("Upload error:", error);
-    res.status(500).json({ success: false, error: error.message || "Upload failed" });
+    res
+      .status(500)
+      .json({ success: false, error: error.message || "Upload failed" });
   }
 });
 
@@ -173,5 +177,9 @@ app.get("/api/model/:id", setCorsHeaders, (req, res) => {
 // Port setup
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Server running in ${process.env.NODE_ENV || "development"} mode on port ${PORT}`);
+  console.log(
+    `Server running in ${
+      process.env.NODE_ENV || "development"
+    } mode on port ${PORT}`
+  );
 });
