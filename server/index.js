@@ -7,20 +7,19 @@ require("dotenv").config();
 
 const app = express();
 
-// CORS config (allow local + live frontend)
-app.use(cors({
-  origin: [
-    "http://localhost:3000",
-    "https://client-gbl.vercel.app"
-  ],
-  methods: ["GET", "POST", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true
-}));
+// CORS config (allow local + Vercel frontend)
+app.use(
+  cors({
+    origin: ["http://localhost:3000", "https://client-gbl.vercel.app", "http://localhost:5000"],
+    methods: ["GET", "POST", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
 
 app.use(express.json({ limit: "50mb" }));
 
-// MongoDB connect
+// MongoDB connection
 mongoose
   .connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
@@ -34,16 +33,14 @@ mongoose
 const conn = mongoose.connection;
 let gfs;
 
-
+// Basic route
 app.get("/", (req, res) => {
   res.send("Server is up and running 🚀");
 });
 
-
 app.get("/api/hello", (req, res) => {
   res.json({ msg: "Hello from Vercel!" });
 });
-
 
 conn.once("open", () => {
   gfs = new mongoose.mongo.GridFSBucket(conn.db, {
@@ -53,11 +50,11 @@ conn.once("open", () => {
   console.log("GridFS initialized");
 });
 
-// Multer setup (only GLB files)
+// Multer setup (only GLB)
 const storage = multer.memoryStorage();
 const upload = multer({
   storage,
-  limits: { fileSize: 100 * 1024 * 1024 }, // 100MB limit
+  limits: { fileSize: 100 * 1024 * 1024 }, // 100MB max
   fileFilter: (req, file, cb) => {
     if (
       file.mimetype === "model/gltf-binary" ||
@@ -108,13 +105,11 @@ app.post("/api/upload", upload.single("model"), async (req, res) => {
     });
   } catch (error) {
     console.error("Upload error:", error);
-    res
-      .status(500)
-      .json({ success: false, error: error.message || "Upload failed" });
+    res.status(500).json({ success: false, error: error.message || "Upload failed" });
   }
 });
 
-// List all models API
+// List all models
 app.get("/api/models", async (req, res) => {
   try {
     const files = await gfs.find().toArray();
@@ -125,9 +120,14 @@ app.get("/api/models", async (req, res) => {
   }
 });
 
-// Download model by filename API
+// Download model by filename
 app.get("/api/models/:filename", (req, res) => {
   try {
+    // 👇 set CORS headers manually here
+    res.set("Access-Control-Allow-Origin", "*");
+    res.set("Access-Control-Allow-Methods", "GET, OPTIONS");
+    res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
     const downloadStream = gfs.openDownloadStreamByName(req.params.filename);
 
     downloadStream.on("error", (error) => {
@@ -142,11 +142,15 @@ app.get("/api/models/:filename", (req, res) => {
   }
 });
 
-// Download model by ID API (✅ NEW)
+// Download model by ID
 app.get("/api/model/:id", async (req, res) => {
   try {
-    const fileId = new mongoose.Types.ObjectId(req.params.id);
+    // 👇 set CORS headers manually here too
+    res.set("Access-Control-Allow-Origin", "*");
+    res.set("Access-Control-Allow-Methods", "GET, OPTIONS");
+    res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
+    const fileId = new mongoose.Types.ObjectId(req.params.id);
     const downloadStream = gfs.openDownloadStream(fileId);
 
     downloadStream.on("error", (error) => {
@@ -161,14 +165,8 @@ app.get("/api/model/:id", async (req, res) => {
   }
 });
 
-
-
-
-// Production note (if needed later)
-if (process.env.NODE_ENV === "production") {
-  console.log("Running in production mode");
-  // No need to serve frontend manually, Vercel handles it
-}
-
 // Port setup
-
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server running in ${process.env.NODE_ENV || "development"} mode on port ${PORT}`);
+});
