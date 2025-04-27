@@ -9,7 +9,7 @@ import axios from 'axios';
 import ModelUploadForm from './components/UploadForm';
 import ModelViewerComponent from "./components/ModelViewer"
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://glbverse-backend.onrender.com';
 
 export default function App() {
   const [models, setModels] = useState([]);
