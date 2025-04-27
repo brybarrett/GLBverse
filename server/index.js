@@ -12,9 +12,9 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000",
-      "https://server-gbl.vercel.app",
-       "https://client-gbl.vercel.app"
+      "https://client-gbl.vercel.app"
     ],
+    
     methods: ["GET", "POST", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
@@ -36,6 +36,11 @@ mongoose
 
 const conn = mongoose.connection;
 let gfs;
+
+
+app.get("/", (req, res) => {
+  res.send("Server is up and running 🚀");
+});
 
 
 app.get("/api/hello", (req, res) => {
@@ -158,6 +163,9 @@ app.get("/api/model/:id", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
+
+
+
 
 // Production note (if needed later)
 if (process.env.NODE_ENV === "production") {
