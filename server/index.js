@@ -8,7 +8,8 @@ const app = express();
 
 // CORS config (allow local + Vercel frontend)
 app.use(cors({
-  origin: 'https://glbverse-backend.onrender.com' 
+  origin: ['https://glbverse-backend.onrender.com' ,
+  'http://localhost:3000']
 }));
 
 app.use(express.json({ limit: "50mb" }));
