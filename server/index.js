@@ -8,7 +8,7 @@ const app = express();
 
 // CORS config (allow local + Vercel frontend)
 app.use(cors({
-  origin: ['https://glbverse-backend.onrender.com' ,
+  origin: ['https://glbverse-backend.onrender.com' ,'https://gl-bverse-prdb.vercel.app'
   'http://localhost:3000']
 }));
 
