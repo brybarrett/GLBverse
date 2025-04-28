@@ -3,7 +3,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, useGLTF, Environment, Bounds, useProgress, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import {
-  Box, IconButton, Paper, Typography, LinearProgress, Tooltip,
+  Box, IconButton, Typography, LinearProgress, Tooltip,
   Card, CardHeader, CardContent, Avatar, Chip, Divider, Collapse,
   Snackbar, Alert
 } from '@mui/material';
