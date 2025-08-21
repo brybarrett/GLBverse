@@ -6,7 +6,7 @@ GLBverse is a full-stack web application built with **React**, **Three.js**, and
 
 ## 🌐 Live Preview
 
-> Coming Soon (will be hosted on [Vercel](https://vercel.com/) / [Render](https://render.com/) / your hosting of choice)
+ https://gl-bverse-prdb.vercel.app/
 
 ---
 
